@@ -3,7 +3,7 @@ import authRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv';
 import './models/index.js';
 import { errorMiddleWare } from './middlewares/errorMiddleware.js';
-dotenv.config();
+dotenv.config({ debug: true });
 
 const app = express();
 const PORT = process.env.PORT || 8080;
