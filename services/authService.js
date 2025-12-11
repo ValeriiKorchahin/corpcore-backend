@@ -6,12 +6,14 @@ import { UnauthorizedError } from '../utils/errors/UnauthorizedError.js';
 import { ConflictError } from '../utils/errors/ConflictError.js';
 import UserOrganizations from '../models/userOrganizationsModel.js';
 import { OrganizationRoles } from '../utils/enums/organization-roles.js';
+import { generateToken } from '../utils/jwt/jwt.js';
 
 
 export const registerUser = async(value) => {
     const transaction = await sequelize.transaction();
     const { email, password, name, organizationName } = value;
     try {
+        debugger;
         // Check if user exists
         const existingUser = await UserModel.findOne({ where: { email }, transaction });
         if (existingUser) {
@@ -40,6 +42,13 @@ export const registerUser = async(value) => {
             role: OrganizationRoles.MANAGER,
         }, { transaction });
 
+        // Generate JWT token
+        const token = generateToken({
+            userId: user.id,
+            organizationId: organization.id,
+            role: OrganizationRoles.MANAGER,
+        });
+        
         await transaction.commit();
 
         return {
@@ -50,6 +59,7 @@ export const registerUser = async(value) => {
                 id: organization.id,
                 name: organization.name,
             },
+            token: token,
         };
 
     } catch (err) {
@@ -83,6 +93,12 @@ export const loginUser = async(value) => {
     if (!passwordMatch) {
         throw new UnauthorizedError('Invalid email or password');
     }
+    
+    const token = generateToken({
+        userId: user.id,
+        organizationId: user.organizations[0].id,
+        role: user.organizations[0].UserOrganizations.role,
+    });
 
     // Remove password from response
     const userData = user.toJSON();
@@ -92,7 +108,7 @@ export const loginUser = async(value) => {
         name: org.name,
         role: org.UserOrganizations.role,
     }));
+    userData.token = token;
 
     return userData;
 };
-

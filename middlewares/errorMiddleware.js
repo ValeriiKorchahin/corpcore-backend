@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { HttpError } from '../utils/errors/HttpError.js';
 
 export const errorMiddleWare = (err, req, res, next) => {
