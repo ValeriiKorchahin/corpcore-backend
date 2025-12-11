@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../utils/errors/UnauthorizedError.js';
 import { ForbiddenError } from '../utils/errors/ForbiddenError.js';
