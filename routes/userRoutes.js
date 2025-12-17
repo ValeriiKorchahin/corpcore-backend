@@ -1,5 +1,10 @@
-// import express from 'express';
-//
-// const router = express.Router();
+import express from 'express';
+import { getUsers } from '../controllers/userController.js';
 
-// router.get('/', )
+const router = express.Router();
+
+// Get All Users
+router.post('/', getUsers);
+
+export default router;
+

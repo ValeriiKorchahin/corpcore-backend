@@ -1,6 +1,8 @@
 import express from 'express';
 import authRoutes from './routes/authRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+
 import dotenv from 'dotenv';
 import './models/index.js';
 import { errorMiddleWare } from './middlewares/errorMiddleware.js';
@@ -14,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 app.use('/companies', companyRoutes);
+app.use('/users', userRoutes);
 
 app.use(errorMiddleWare);
 
