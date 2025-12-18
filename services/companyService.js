@@ -1,9 +1,8 @@
 import { sequelize } from '../database/database.js';
-import { CompanyModel, UserCompanyModel } from '../models/index.js';
+import { CompanyModel, UserCompanyModel, UserModel } from '../models/index.js';
 import { Op } from 'sequelize';
 import { CompanyRoles } from '../utils/enums/company-roles.js';
 import { NotFoundError } from '../utils/errors/NotFoundError.js';
-import UserModel from '../models/userModel.js';
 import { ConflictError } from '../utils/errors/ConflictError.js';
 import bcrypt from 'bcrypt';
 import UserOrganizations from '../models/userOrganizationsModel.js';
@@ -34,7 +33,7 @@ export const getCompanyList = async(payload) => {
     });
     return {
         data: companies,
-        total,
+        total: total,
         page: isPaginationIncluded ? page : 1,
         limit: isPaginationIncluded ? limit : total,
     };
@@ -167,6 +166,81 @@ export const remove = async(companyId) => {
         }
         await company.destroy();
         return company;
+    } catch (err) {
+        throw err;
+    }
+};
+
+export const changeUserRole = async(companyId, userId, role) => {
+    try {
+        const userCompany = await UserCompanyModel.findOne({
+            where: {
+                companyId: companyId,
+                userId: userId,
+            },
+        });
+        if (!userCompany) {
+            throw new NotFoundError('Company or user is not found');
+        }
+        userCompany.update({
+            role: role,
+        });
+        return role;
+    } catch(err) {
+        throw err;
+    }
+};
+
+export const getCompanyUsers = async(payload) => {
+    const { search, limit, page, companyId } = payload;
+    debugger;
+    try {
+        const isPaginationIncluded = 
+            Number.isInteger(limit) && Number.isInteger(page);
+        const querySearch = search
+            ? {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${search}%` } },
+                    { email: { [Op.like]: `%${search}%` } },
+                ],
+            }
+            : {};
+
+        const offset = isPaginationIncluded
+            ? (page - 1) * limit
+            : undefined;
+
+        const { rows: companyUsers, total: total } = await UserCompanyModel.findAndCountAll({
+            where: {
+                companyId: companyId,
+            },
+            attributes: ['role'],
+            include: [
+                {
+                    model: UserModel,
+                    where: querySearch,
+                    required: !!search,
+                    attributes: {
+                        exclude: ['password'],
+                    },
+                },
+            ],
+            limit: isPaginationIncluded ? limit : undefined,
+            offset,
+            order: [['createdAt', 'DESC']],
+        });
+
+        const mappedUsers = companyUsers.map(u => ({
+            ...u.user.toJSON(),
+            role: u.role,
+        }));
+
+        return {
+            data: mappedUsers,
+            total: total,
+            page: isPaginationIncluded ? page : 1,
+            limit: isPaginationIncluded ? limit : total,
+        };
     } catch (err) {
         throw err;
     }

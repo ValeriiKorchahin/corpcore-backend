@@ -6,9 +6,10 @@ import {
     update,
     remove,
     fetchUserCompanies,
-    getCompanyById, createUser,
+    getCompanyById, createUser, changeUserRole, getCompanyUsers,
 } from '../services/companyService.js';
 import { userSchema } from '../validators/userValidator.js';
+import { roleSchema } from '../validators/roleValidator.js';
 
 export const getCompanies = async(req, res, next) => {
     try {
@@ -98,3 +99,34 @@ export const deleteCompany = async(req, res, next) => {
     }
 };
 
+export const updateUserRole = async(req, res, next) => {
+    try {
+        const companyId = req.params.id;
+        const userID = req.params.userId;
+        const role = req.body?.role;
+        
+        const { error, value } = roleSchema.validate(req.body);
+        
+        if (error) {
+            throw new BadRequestError(error.details[0].message);
+        }
+        const updatedRole = await changeUserRole(companyId, userID, role);
+        return res.status(200).send({ updatedRole });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const fetchCompanyUsers = async(req, res, next) => {
+    try {
+        const users = await getCompanyUsers({
+            companyId: req.params.id,
+            limit: req.body.limit,
+            page: req.body.page,
+            search: req.query.search,
+        });
+        return res.status(200).json(users);
+    }  catch (err) {
+        next(err);
+    }
+};

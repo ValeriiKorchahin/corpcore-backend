@@ -49,7 +49,7 @@ export const getOrganizationUsers = async(payload) => {
 
     return {
         data: mappedUsers,
-        total,
+        total: total,
         page: isPaginationIncluded ? page : 1,
         limit: isPaginationIncluded ? limit : total,
     };

@@ -4,7 +4,7 @@ import {
     getCompanies,
     updateCompany,
     deleteCompany,
-    getUserCompanies, getCompany, createCompanyUser,
+    getUserCompanies, getCompany, createCompanyUser, updateUserRole, fetchCompanyUsers,
 } from '../controllers/companyController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 
@@ -19,6 +19,9 @@ router.get('/user', authMiddleware, getUserCompanies);
 // Create User In Company
 router.post('/:id/user', authMiddleware, createCompanyUser);
 
+// Get Company Users
+router.post('/:id/users', authMiddleware, fetchCompanyUsers);
+
 // Get Company
 router.get('/:id', authMiddleware, getCompany);
 
@@ -30,5 +33,8 @@ router.put('/:id', authMiddleware, updateCompany);
 
 // Delete Company
 router.delete('/:id', authMiddleware, deleteCompany);
+
+// Change User Role
+router.patch('/:id/user/:userId/role', authMiddleware, updateUserRole);
 
 export default router;
