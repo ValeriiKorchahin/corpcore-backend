@@ -68,7 +68,7 @@ export const createCompanyUser = async(req, res, next) => {
         if (error) {
             throw new BadRequestError(error.details[0].message);
         }
-        const user = await createUser(companyId, organizationId, body);
+        const user = await createUser(companyId, organizationId, value);
         return res.status(200).send({ user });
     } catch(err) {
         next(err);
