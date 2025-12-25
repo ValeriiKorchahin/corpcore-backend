@@ -22,7 +22,7 @@ export const login = async(req, res, next) => {
             throw new BadRequestError(error.details[0].message);
         }
         const user = await loginUser(value);
-        return res.status(200).send({ user });
+        return res.status(200).send(user);
     } catch (err) {
         next(err);
     }

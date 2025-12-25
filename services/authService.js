@@ -54,10 +54,11 @@ export const registerUser = async(value) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            organization: {
+            organization: [{
                 id: organization.id,
                 name: organization.name,
-            },
+                role: OrganizationRoles.MANAGER,
+            }],
             token: token,
         };
 
