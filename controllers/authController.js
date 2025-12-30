@@ -9,7 +9,7 @@ export const register = async(req, res, next) => {
             throw new BadRequestError(error.details[0].message);
         }
         const user = await registerUser(value);
-        return res.status(200).send({ user });
+        return res.status(200).send(user);
     } catch (err) {
         next(err);
     }

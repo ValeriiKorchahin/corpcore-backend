@@ -54,7 +54,7 @@ export const registerUser = async(value) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            organization: [{
+            organizations: [{
                 id: organization.id,
                 name: organization.name,
                 role: OrganizationRoles.MANAGER,
